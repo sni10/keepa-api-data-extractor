@@ -45,4 +45,20 @@ class KeepaInputDtoTest extends TestCase
             'step' => 3,
         ], $dto->toArray());
     }
+
+    public function testGetBrandReturnsNormalizedBrand(): void
+    {
+        $dto = KeepaInputDto::fromArray([
+            'id' => '10',
+            'domain_id' => '3',
+            'brand' => "  Nike  ",
+            'time_from' => '2025-02-01',
+            'time_to' => '2025-02-28',
+            'version' => '1',
+            'status' => ' IN_PROGRESS ',
+            'step' => '1',
+        ]);
+
+        self::assertSame('Nike', $dto->getBrand());
+    }
 }
