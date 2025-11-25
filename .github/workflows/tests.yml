@@ -60,11 +60,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          docker compose exec -T php-keepa-api composer install --no-interaction --prefer-dist --optimize-autoloader
+          docker compose exec -T -w /var/www/keepa-api-data-extractor php-keepa-api composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run PHPUnit with coverage
         run: |
-          docker compose exec -T -e XDEBUG_MODE=${XDEBUG_MODE} php-keepa-api vendor/bin/phpunit \
+          docker compose exec -T -w /var/www/keepa-api-data-extractor -e XDEBUG_MODE=${XDEBUG_MODE} php-keepa-api vendor/bin/phpunit \
             --log-junit var/coverage-report/phpunit-report.xml \
             --coverage-text \
             --coverage-html=var/coverage-report \
