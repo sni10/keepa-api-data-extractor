@@ -1,0 +1,12 @@
+services:
+  php-keepa-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_ENV: ${APP_ENV}
+    env_file:
+      - .env
+#    volumes:
+#      - .:/var/www/keepa-api-data-extractor # for the ability to locally plug-and-play modify project files for development
+    command: tail -f /dev/null

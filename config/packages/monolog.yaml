@@ -1,0 +1,91 @@
+monolog:
+    channels: ["slack", "app"]
+
+    handlers:
+        combined:
+            type: group
+            members: [slack, app]
+        slack:
+            type: slackwebhook
+            level: error
+            channels: ["slack"]
+            webhook_url: "%env(SLACK_WEBHOOK_URL)%"
+            bot_name: "KEEPA-UP-Scraper"
+            app_name: 'Keepa Informer'
+            icon_emoji: ":construction:"
+            include_extra: true
+        app:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: error
+            channels: ["app"]
+        console:
+            type: console
+            process_psr_3_messages: false
+            channels: ["app"]
+        stdout:
+            type: stream
+            path: "php://stdout"
+            level: info
+            channels: ["app"]
+        stderr:
+            type: stream
+            path: "php://stderr"
+            level: warning
+            channels: ["app"]
+
+when@test, when@dev:
+    monolog:
+        handlers:
+            slack:
+                type: slackwebhook
+                level: error
+                channels: ["slack"]
+                webhook_url: "%env(SLACK_WEBHOOK_URL)%"
+                bot_name: "KEEPA-UP-Scraper:TEST"
+                app_name: 'Keepa Informer'
+                icon_emoji: ":construction:"
+                include_extra: true
+            app:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+                channels: ["app"]
+            stdout:
+                type: stream
+                path: "php://stdout"
+                level: debug
+                channels: ["app"]
+            stderr:
+                type: stream
+                path: "php://stderr"
+                level: debug
+                channels: ["app"]
+
+when@prod:
+    monolog:
+        handlers:
+            slack:
+                type: slackwebhook
+                level: error
+                channels: [ "slack" ]
+                webhook_url: '%env(SLACK_WEBHOOK_URL)%'
+                bot_name: 'KEEPA-UP-Scraper'
+                app_name: 'Keepa Informer'
+                icon_emoji: ':mega:'
+                include_extra: true
+            app:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: error
+                channels: [ "app" ]
+            stdout:
+                type: stream
+                path: "php://stdout"
+                level: warning
+                channels: ["app"]
+            stderr:
+                type: stream
+                path: "php://stderr"
+                level: error
+                channels: ["app"]

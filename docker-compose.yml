@@ -1,0 +1,20 @@
+services:
+  php-keepa-api:
+    image: keepa-api-data-extractor-php:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_ENV: ${APP_ENV}
+    env_file:
+      - .env
+    networks:
+      - internal_sync_network
+#        For prod
+#        command: composer run-script serve
+
+networks:
+  internal_sync_network:
+    driver: bridge
+    external: true
+    name: internal_sync_network

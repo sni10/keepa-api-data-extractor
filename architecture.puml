@@ -1,0 +1,75 @@
+@startuml
+title Keepa API Data Extractor - Architecture
+
+!define COMPONENT_BG #E8F5E9
+!define SERVICE_BG #FFF9C4
+!define HANDLER_BG #E3F2FD
+!define EXTERNAL_BG #FFE0B2
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+' External Systems
+queue "RabbitMQ\nInput Queue" as InputQueue #FFE0B2
+queue "RabbitMQ\nOutput Queue" as OutputQueue #FFE0B2
+component "Keepa REST API" as KeepaAPI #FFE0B2
+
+' Application Layers
+package "Symfony Application" {
+
+    ' Handler Layer
+    component "KeepaInputMessageHandler" as Handler HANDLER_BG
+
+    ' Service Layer
+    component "FinderProductsService" as FinderService SERVICE_BG
+    component "KeepaService" as KeepaService SERVICE_BG
+    component "MessageValidator" as Validator SERVICE_BG
+
+    ' DTO Layer
+    component "KeepaInputDto" as InputDTO COMPONENT_BG
+    component "KeepaOutputDto" as OutputDTO COMPONENT_BG
+
+    ' Serializers
+    component "InputMessageSerializer" as InputSerializer COMPONENT_BG
+    component "OutputMessageSerializer" as OutputSerializer COMPONENT_BG
+}
+
+' Data Flow
+InputQueue --> Handler : consume
+Handler --> InputSerializer : deserialize
+InputSerializer --> InputDTO : create
+
+Handler --> FinderService : execute(InputDTO)
+FinderService --> Validator : validate input
+FinderService --> KeepaService : search products
+
+KeepaService --> KeepaAPI : HTTP requests
+KeepaAPI --> KeepaService : JSON responses
+
+KeepaService --> OutputDTO : generate
+FinderService --> Validator : validate output
+FinderService --> OutputSerializer : serialize
+OutputSerializer --> OutputQueue : publish
+
+note right of Handler
+  **Entry Point**
+  Consumes messages from RabbitMQ
+  Delegates to business logic
+end note
+
+note right of KeepaService
+  **Core Logic**
+  - Token management
+  - Pagination
+  - Rate limiting
+  - Statistics
+end note
+
+note bottom of InputDTO
+  **Data Transfer Objects**
+  Validated via Symfony Validator
+  Immutable data structures
+end note
+
+@enduml

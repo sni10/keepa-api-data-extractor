@@ -1,0 +1,13 @@
+# config/packages/messenger.yaml
+framework:
+    messenger:
+        transports:
+            input_queue:
+                dsn: '%env(RABBITMQ_INPUT_TRANSPORT_DSN)%'
+                serializer: 'App\Serializer\InputMessageSerializer'
+            output_queue:
+                dsn: '%env(RABBITMQ_OUTPUT_TRANSPORT_DSN)%'
+                serializer: 'App\Serializer\OutputMessageSerializer'
+        routing:
+            App\Dto\KeepaInputDto: input_queue
+            App\Dto\KeepaOutputDto: output_queue
