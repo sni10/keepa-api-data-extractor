@@ -4,7 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/sni10/keepa-api-data-extractor?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sni10/keepa-api-data-extractor/releases)
 [![Release Workflow](https://img.shields.io/github/actions/workflow/status/sni10/keepa-api-data-extractor/release.yml?style=for-the-badge&logo=githubactions&logoColor=white&label=Release)](https://github.com/sni10/keepa-api-data-extractor/actions/workflows/release.yml)
 [![Tests](https://img.shields.io/github/actions/workflow/status/sni10/keepa-api-data-extractor/tests.yml?style=for-the-badge&logo=githubactions&logoColor=white&label=Tests)](https://github.com/sni10/keepa-api-data-extractor/actions/workflows/tests.yml)
-[![Coverage](https://img.shields.io/badge/Coverage-89%25-yellow?style=for-the-badge&logo=codecov&logoColor=white)](https://github.com/sni10/keepa-api-data-extractor/actions/workflows/tests.yml)
+[![Coverage](https://img.shields.io/badge/Coverage-89%25-44cc11?style=for-the-badge&logo=codecov&logoColor=white)](https://github.com/sni10/keepa-api-data-extractor/actions/workflows/tests.yml)
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-7.2-000000?style=for-the-badge&logo=Symfony&logoColor=white)](https://symfony.com/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
