@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Envelope;
 
 class FinderProductsServiceTest extends TestCase
 {
@@ -136,7 +137,8 @@ class FinderProductsServiceTest extends TestCase
         $this->bus
             ->expects(self::once())
             ->method('dispatch')
-            ->with($validatedOutput);
+            ->with($validatedOutput)
+            ->willReturn(new Envelope($validatedOutput));
 
         $this->keepaService
             ->expects(self::once())
@@ -168,5 +170,17 @@ class FinderProductsServiceTest extends TestCase
             ],
             $result,
         );
+    }
+
+    public function testGetKeepaServiceReturnsInjectedInstance(): void
+    {
+        $service = new FinderProductsService(
+            $this->logger,
+            $this->keepaService,
+            $this->messageValidator,
+            $this->bus,
+        );
+
+        self::assertSame($this->keepaService, $service->getKeepaService());
     }
 }
