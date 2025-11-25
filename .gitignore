@@ -32,8 +32,3 @@
 test_auth_prod.php
 /examples/
 !/.env.example
-
-###> phpunit/phpunit ###
-/phpunit.xml
-/.phpunit.cache/
-###< phpunit/phpunit ###
