@@ -183,4 +183,98 @@ class FinderProductsServiceTest extends TestCase
 
         self::assertSame($this->keepaService, $service->getKeepaService());
     }
+
+    public function testExecuteSkipsInvalidOutputsAndContinues(): void
+    {
+        $inputDto = KeepaInputDto::fromArray([
+            'id' => 3,
+            'domain_id' => 1,
+            'brand' => 'Reebok',
+            'time_from' => '2025-03-01',
+            'time_to' => '2025-03-31',
+            'version' => 1,
+            'status' => 'IN_PROGRESS',
+            'step' => 2,
+        ]);
+
+        $validatedInput = clone $inputDto;
+
+        $this->messageValidator
+            ->expects(self::once())
+            ->method('validateInput')
+            ->with($inputDto)
+            ->willReturn($validatedInput);
+
+        $product1 = new KeepaOutputDto();
+        $product1->asin = 'B000INVALID';
+
+        $product2 = new KeepaOutputDto();
+        $product2->asin = 'B000VALID00';
+
+        $generator = (function () use ($product1, $product2) {
+            yield $product1;
+            yield $product2;
+        })();
+
+        $this->keepaService
+            ->expects(self::once())
+            ->method('execute')
+            ->with($validatedInput)
+            ->willReturn($generator);
+
+        $this->messageValidator
+            ->expects(self::exactly(2))
+            ->method('validateOutput')
+            ->willReturnCallback(function ($product) use ($product1, $product2) {
+                if ($product === $product1) {
+                    return null; // invalid
+                }
+                return clone $product2; // valid
+            });
+
+        $this->logger
+            ->expects(self::once())
+            ->method('warning')
+            ->with(
+                self::stringContains('Invalid Output Kafka message'),
+                self::anything()
+            );
+
+        $this->bus
+            ->expects(self::once())
+            ->method('dispatch')
+            ->with(self::isInstanceOf(KeepaOutputDto::class))
+            ->willReturn(new Envelope($product2));
+
+        $this->keepaService
+            ->expects(self::once())
+            ->method('getStats')
+            ->willReturn([
+                'asinsFound' => 2,
+                'tokensUsed' => 20,
+                'pagesProcessed' => 1,
+                'sleepSeconds' => 0,
+                'tokensLeft' => 80,
+            ]);
+
+        $service = new FinderProductsService(
+            $this->logger,
+            $this->keepaService,
+            $this->messageValidator,
+            $this->bus,
+        );
+
+        $result = $service->execute($inputDto);
+
+        self::assertSame(
+            [
+                'asinsFound' => 2,
+                'tokensUsed' => 20,
+                'pages' => 1,
+                'sleepSeconds' => 0,
+                'tokensLeft' => 80,
+            ],
+            $result,
+        );
+    }
 }
