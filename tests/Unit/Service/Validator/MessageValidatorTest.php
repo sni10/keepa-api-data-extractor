@@ -35,7 +35,7 @@ class MessageValidatorTest extends TestCase
         );
     }
 
-    public function testValidateInputReturnsDto WhenValid(): void
+    public function testValidateInputReturnsDtoWhenValid(): void
     {
         $dto = KeepaInputDto::fromArray([
             'id' => 1,
