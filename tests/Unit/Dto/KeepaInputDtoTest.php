@@ -61,4 +61,102 @@ class KeepaInputDtoTest extends TestCase
 
         self::assertSame('Nike', $dto->getBrand());
     }
+
+    public function testFromArrayWithNullVersion(): void
+    {
+        $dto = KeepaInputDto::fromArray([
+            'id' => 5,
+            'domain_id' => 2,
+            'brand' => 'Puma',
+            'time_from' => '2025-03-01',
+            'time_to' => '2025-03-31',
+            'status' => 'PENDING',
+            'step' => 0,
+        ]);
+
+        self::assertNull($dto->version);
+        self::assertSame(0, $dto->step);
+    }
+
+    public function testFromArrayWithDifferentStatuses(): void
+    {
+        $statuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FINISHED', 'FAILED', 'CANCELLED'];
+
+        foreach ($statuses as $status) {
+            $dto = KeepaInputDto::fromArray([
+                'id' => 1,
+                'domain_id' => 1,
+                'brand' => 'Test',
+                'time_from' => '2025-01-01',
+                'time_to' => '2025-01-31',
+                'status' => $status,
+                'step' => 0,
+            ]);
+
+            self::assertSame($status, $dto->status);
+        }
+    }
+
+    public function testFromArrayHandlesEmptyBrand(): void
+    {
+        $dto = KeepaInputDto::fromArray([
+            'id' => 1,
+            'domain_id' => 1,
+            'brand' => '',
+            'time_from' => '2025-01-01',
+            'time_to' => '2025-01-31',
+            'status' => 'PENDING',
+            'step' => 0,
+        ]);
+
+        self::assertSame('', $dto->brand);
+    }
+
+    public function testFromArrayCastsStepToZeroWhenMissing(): void
+    {
+        $dto = KeepaInputDto::fromArray([
+            'id' => 1,
+            'domain_id' => 1,
+            'brand' => 'Test',
+            'time_from' => '2025-01-01',
+            'time_to' => '2025-01-31',
+            'status' => 'PENDING',
+        ]);
+
+        self::assertSame(0, $dto->step);
+    }
+
+    public function testFromArrayTrimsTimeFields(): void
+    {
+        $dto = KeepaInputDto::fromArray([
+            'id' => 1,
+            'domain_id' => 1,
+            'brand' => 'Test',
+            'time_from' => '  2025-01-01  ',
+            'time_to' => '  2025-01-31  ',
+            'status' => 'PENDING',
+            'step' => 0,
+        ]);
+
+        self::assertSame('2025-01-01', $dto->time_from);
+        self::assertSame('2025-01-31', $dto->time_to);
+    }
+
+    public function testToArrayIncludesNullVersion(): void
+    {
+        $dto = new KeepaInputDto();
+        $dto->id = 1;
+        $dto->domain_id = 1;
+        $dto->brand = 'Test';
+        $dto->time_from = '2025-01-01';
+        $dto->time_to = '2025-01-31';
+        $dto->version = null;
+        $dto->status = 'PENDING';
+        $dto->step = 0;
+
+        $array = $dto->toArray();
+
+        self::assertArrayHasKey('version', $array);
+        self::assertNull($array['version']);
+    }
 }
