@@ -83,11 +83,13 @@ jobs:
         run: |
           gh release create "${{ steps.calculate_version.outputs.new_version }}" \
             --title "Release ${{ steps.calculate_version.outputs.new_version }}" \
-            --notes "## Changes in this Release
+            --notes-file - <<'EOF'
+          ## Changes in this Release
 
-          Triggered by push to \`${{ github.ref_name }}\` (commit \`${{ github.sha }}\`)
+          Triggered by push to `${{ github.ref_name }}` (commit `${{ github.sha }}`)
 
           ---
 
           ### Commits since ${{ steps.get_latest_tag.outputs.latest_tag }}
-          ${{ steps.changelog.outputs.changelog }}"
+          ${{ steps.changelog.outputs.changelog }}
+          EOF
