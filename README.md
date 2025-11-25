@@ -31,6 +31,18 @@
 
 ![architecture-Keepa_API_Data_Extractor___Architecture.png](architecture-Keepa_API_Data_Extractor___Architecture.png)
 
+### Применяемые паттерны проектирования
+
+В проекте активно используются следующие паттерны:
+
+- **DTO (Data Transfer Object)**: Для передачи типизированных данных между слоями (`KeepaInputDto`, `KeepaOutputDto`).
+- **Facade (Фасад)**: `KeepaService` скрывает сложность взаимодействия с внешней библиотекой Keepa API и управления токенами.
+- **Service Layer (Сервисный слой)**: Разделение бизнес-логики (`FinderProductsService`) и логики работы с API (`KeepaService`).
+- **Orchestrator (Оркестратор)**: `FinderProductsService` управляет потоком: валидация -> поиск -> отправка.
+- **Command Handler**: Обработка сообщений через `KeepaInputMessageHandler` (CQRS-style в Symfony Messenger).
+- **Iterator / Generator**: Использование `yield` для экономии памяти при переборе больших списков товаров.
+- **Dependency Injection**: Внедрение зависимостей для обеспечения тестируемости и гибкости.
+
 ## Требования
 
 - PHP 8.3+
@@ -390,4 +402,3 @@ CREATE TABLE find_products (
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details
-ываыва
